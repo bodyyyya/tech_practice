@@ -14,7 +14,12 @@ Rails.application.routes.draw do
   resources :products
   resource :cart, only: [:show]
   resources :cart_items, only: [:create, :update, :destroy]
-  resources :orders, only: [:new, :create]
+  resources :orders, only: [:new, :create] do
+    collection do
+      get :thank_you
+    end
+  end
+  
 
   root 'products#index'
   # Defines the root path route ("/")

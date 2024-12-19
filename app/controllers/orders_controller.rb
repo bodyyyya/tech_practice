@@ -19,10 +19,13 @@ class OrdersController < ApplicationController
 
       OrderMailer.order_confirmation(@order).deliver_now
 
-      current_user.cart.cart_items.destroy_all # Clear the cart after order is placed
+      current_user.cart.cart_items.destroy_all
+  
+      redirect_to thank_you_orders_path, notice: "Дякуємо за ваше замовлення!"
     else
       @cart = current_user.cart
-      render :new, alert: "There was an error placing your order. Please try again."
+      flash[:alert] = "Сталася помилка під час оформлення замовлення. Спробуйте ще раз."
+      render :new
     end
   end
 
