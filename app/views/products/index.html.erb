@@ -1,6 +1,6 @@
-<div class="container mx-auto my-8">
-  <div class="flex">
-    <div class="w-1/4 p-4 bg-white rounded-lg shadow-md mt-7 max-h-52">
+<div class="container mx-auto my-8 px-4">
+  <div class="flex flex-col md:flex-row">
+    <div class="w-full md:w-1/4 p-4 bg-white rounded-lg shadow-md mt-5 h-52 md:h-full">
       <h2 class="text-xl font-bold mb-4">Фільтри</h2>
       <%= form_with(url: products_path, method: :get, local: true) do %>
         <div data-controller="price-range">
@@ -39,24 +39,35 @@
       <% end %>
     </div>
 
-    <div class="w-3/4 p-4">
-      <div class="flex items-center mb-4">
-        <%= form_with(url: products_path, method: :get, local: true, class: "flex w-full") do %>
-          <input type="text" name="query" placeholder="Пошук..." class="w-full p-2 border border-gray-300 rounded-lg" value="<%= params[:query] %>">
-          <button type="submit" class="ml-2 bg-blue-500 text-white font-bold py-2 px-4 rounded">Search</button>
-        <% end %>
-        <% if user_signed_in? && current_user.admin? %>
-          <%= link_to 'Добавити продукт', new_product_path, class: 'ml-4 bg-green-500 text-white font-bold py-2 px-4 rounded' %>
+    <div class="w-full md:w-3/4 p-4">
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <%= form_with(url: products_path, method: :get, local: true, class: "flex flex-wrap items-center w-full gap-2") do %>
+          <input 
+            type="text" 
+            name="query" 
+            placeholder="Пошук..." 
+            class="flex-1 p-2 border border-gray-300 rounded-lg" 
+            value="<%= params[:query] %>"
+          >
+          <button 
+            type="submit" 
+            class="bg-blue-500 text-white font-bold py-2 px-4 rounded whitespace-nowrap"
+          >
+            Search
+          </button>
+          <% if user_signed_in? && current_user.admin? %>
+            <%= link_to 'Добавити продукт', new_product_path, class: 'bg-green-500 text-white font-bold py-2 px-4 rounded whitespace-nowrap' %>
+          <% end %>
         <% end %>
       </div>
-      
-      <div class="grid grid-cols-3 gap-4">
+      <!-- Products Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <% @products.each do |product| %>
           <div class="bg-white p-4 rounded-lg shadow-md">
             <% if product.image.attached? %>
-              <%= image_tag product.image, class: "w-full h-80 object-cover rounded-md" %>
+              <%= image_tag product.image, class: "w-full h-64 object-cover rounded-md" %>
             <% else %>
-              <div class="w-full h-80 object-cover rounded-md bg-gray-200"></div>
+              <div class="w-full h-64 object-cover rounded-md bg-gray-200"></div>
             <% end %>
             <h3 class="text-lg font-bold mt-2"><%= link_to product.title, product %></h3>
             <p class="text-gray-700"><%= product.description.truncate(100) %></p>

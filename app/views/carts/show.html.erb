@@ -1,42 +1,45 @@
 <div class="container mx-auto my-8" data-controller="cart">
-  <h2 class="text-2xl font-bold mb-4">Ваш кошик</h2>
+  <h2 class="text-2xl font-bold mb-4 ml-2">Ваш кошик</h2>
   <% if @cart.cart_items.any? %>
-    <table class="min-w-full bg-white">
-      <thead>
-        <tr>
-          <th class="py-2 px-4 border-b">Товар</th>
-          <th class="py-2 px-4 border-b">Ціна</th>
-          <th class="py-2 px-4 border-b">Кількість</th>
-          <th class="py-2 px-4 border-b">Всього</th>
-          <th class="py-2 px-4 border-b">Дії</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @cart.cart_items.each do |item| %>
-          <tr>
-            <td class="py-2 text-center px-4 border-b"><%= item.product.title %></td>
-            <td class="py-2 text-center px-4 border-b"><%= number_to_currency(item.price || item.product.price, unit: "₴") %></td>
-            <td class="py-2 px-4 text-center border-b">
-              <%= form_with(model: item, local: true, method: :patch, class: "inline") do |f| %>
-                <%= f.number_field :quantity, value: item.quantity, min: 1, class: "w-16 p-2 border border-gray-300 rounded-lg", data: { cart_target: "quantityInput" } %>
-              <% end %>
-            </td>
-            <td class="py-2 text-center px-4 border-b"><%= number_to_currency(item.total_price, unit: "₴") %></td>
-            <td class="py-2 text-center px-4 border-b">
-              <%= link_to 'Видалити', cart_item_path(item), method: :delete, data: { turbo_method: :delete, confirm: 'Are you sure?' }, class: 'delete-link bg-red-500 text-white font-bold py-1 px-2 rounded' %>
-            </td>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="py-2 px-4 border-b text-left text-sm font-bold">Товар</th>
+            <th class="py-2 px-4 border-b text-left text-sm font-bold">Ціна</th>
+            <th class="py-2 px-4 border-b text-left text-sm font-bold">Кількість</th>
+            <th class="py-2 px-4 border-b text-left text-sm font-bold">Всього</th>
+            <th class="py-2 px-4 border-b text-left text-sm font-bold">Дії</th>
           </tr>
-        <% end %>
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="3" class="py-2 px-4 text-right font-bold">Разом:</td>
-          <td class="py-2 px-4 font-bold"><%= number_to_currency(@cart.total_price, unit: "₴") %></td>
-          <td></td>
-        </tr>
-      </tfoot>
-    </table>
-    <div class="mt-4 flex justify-between items-center">
+        </thead>
+        <tbody>
+          <% @cart.cart_items.each do |item| %>
+            <tr>
+              <td class="py-2 px-4 border-b text-sm"><%= item.product.title %></td>
+              <td class="py-2 px-4 border-b text-sm"><%= number_to_currency(item.price || item.product.price, unit: "₴") %></td>
+              <td class="py-2 px-4 border-b text-sm text-center">
+                <%= form_with(model: item, local: true, method: :patch, class: "inline") do |f| %>
+                  <%= f.number_field :quantity, value: item.quantity, min: 1, class: "w-16 p-2 border border-gray-300 rounded-lg", data: { cart_target: "quantityInput" } %>
+                <% end %>
+              </td>
+              <td class="py-2 px-4 border-b text-sm"><%= number_to_currency(item.total_price, unit: "₴") %></td>
+              <td class="py-2 px-4 border-b text-sm">
+                <%= link_to 'Видалити', cart_item_path(item), method: :delete, data: { turbo_method: :delete, confirm: 'Are you sure?' }, class: 'delete-link bg-red-500 text-white font-bold py-1 px-2 rounded' %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="py-2 px-4 text-right font-bold text-sm">Разом:</td>
+            <td class="py-2 px-4 font-bold text-sm"><%= number_to_currency(@cart.total_price, unit: "₴") %></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="mt-4 flex flex-wrap justify-between items-center gap-2">
       <%= link_to 'Продовжити покупки', products_path, class: 'bg-green-500 text-white font-bold py-2 px-4 rounded' %>
       <%= link_to 'Замовити', new_order_path, class: 'bg-blue-500 text-white font-bold py-2 px-4 rounded' %>
     </div>

@@ -19,6 +19,8 @@ Rails.application.routes.draw do
       get :thank_you
     end
   end
+
+  get 'about', to: 'pages#about', as: 'about'
   
 
   root 'products#index'
