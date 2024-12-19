@@ -1,21 +1,21 @@
-<div class="container mx-auto mt-8">
-  <h2 class="text-2xl font-bold mb-4">Place Your Order</h2>
+<div class="container mx-auto my-8">
+  <h2 class="text-2xl font-bold mb-4">Оформити замовлення</h2>
   <div class="bg-white p-6 rounded-lg shadow-md">
-    <h3 class="text-xl font-bold mb-4">Order Summary</h3>
+    <h3 class="text-xl font-bold mb-4">Підсумок замовлення</h3>
     <table class="min-w-full bg-white">
       <thead>
         <tr>
-          <th class="py-2 px-4 border-b">game</th>
-          <th class="py-2 px-4 border-b">Price</th>
-          <th class="py-2 px-4 border-b">Quantity</th>
-          <th class="py-2 px-4 border-b">Total</th>
+          <th class="py-2 px-4 border-b">Назва продукту</th>
+          <th class="py-2 px-4 border-b">Ціна</th>
+          <th class="py-2 px-4 border-b">Кількість</th>
+          <th class="py-2 px-4 border-b">Взагалом</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="text-center">
         <% @cart.cart_items.each do |item| %>
           <tr>
-            <td class="py-2 px-4 border-b"><%= item.game.title %></td>
-            <td class="py-2 px-4 border-b"><%= number_to_currency(item.price || item.game.price, unit: "₴") %></td>
+            <td class="py-2 px-4 border-b"><%= item.product.title %></td>
+            <td class="py-2 px-4 border-b"><%= number_to_currency(item.price || item.product.price, unit: "₴") %></td>
             <td class="py-2 px-4 border-b"><%= item.quantity %></td>
             <td class="py-2 px-4 border-b"><%= number_to_currency(item.total_price, unit: "₴") %></td>
           </tr>
@@ -23,7 +23,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="3" class="py-2 px-4 text-right font-bold">Total:</td>
+          <td colspan="3" class="py-2 px-4 text-right font-bold">Взагалом:</td>
           <td class="py-2 px-4 font-bold"><%= number_to_currency(@cart.total_price, unit: "₴") %></td>
         </tr>
       </tfoot>
@@ -31,14 +31,15 @@
     
     <div class="mt-8">
       <%= form_with model: @order, url: orders_path, local: true do |f| %>
-        <div class="mb-4">
-         <%= f.label :shipping_address, "Your email", class: "block text-gray-700 font-bold mb-2" %>
-          <%= f.text_area :shipping_address, class: "w-full p-2 border border-gray-300 rounded-lg", id: "shipping_address" %>
-          <div id="email-error" class="text-red-500 mt-2" style="display: none;">Please enter a valid email address.</div>
+        <div data-controller="order-form">
+          <div class="mb-4">
+            <%= f.label :shipping_address, "Адрес доставки", class: "block text-gray-700 font-bold mb-2" %>
+            <%= f.text_area :shipping_address, class: "w-full p-2 border border-gray-300 rounded-lg", id: "shipping_address", data: { "order-form-target": "shippingAddress" } %>
+          </div>
         </div>
         <div class="mb-4">
-          <%= f.label :payment_method, "Payment Method", class: "block text-gray-700 font-bold mb-2" %>
-          <%= f.select :payment_method, options_for_select(["Credit Card", "Bank Transfer"]), {}, class: "w-full p-2 border border-gray-300 rounded-lg" %>
+          <%= f.label :payment_method, "Спосіб оплати", class: "block text-gray-700 font-bold mb-2" %>
+          <%= f.select :payment_method, options_for_select(["Накладний платіж", "Банківський переказ"]), {}, class: "w-full p-2 border border-gray-300 rounded-lg" %>
         </div>
         <div class="flex justify-end">
           <%= f.submit "Place Order", class: "bg-green-500 text-white font-bold py-2 px-4 rounded" %>
@@ -48,18 +49,3 @@
   </div>
 </div>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const emailField = document.getElementById("shipping_address");
-    const errorDiv = document.getElementById("email-error");
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    emailField.addEventListener("input", function() {
-      if (emailRegex.test(emailField.value)) {
-        errorDiv.style.display = "none";
-      } else {
-        errorDiv.style.display = "block";
-      }
-    });
-  });
-</script>

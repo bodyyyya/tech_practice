@@ -1,10 +1,11 @@
-Order Confirmation
+Підтвердження замовлення
 
-Thank you for your order, <%= @user.email %>!
+Дякуємо за замовлення, <%= @user.email %>!
 
-Here are the details of your order:
+Ось деталі вашого замовлення:
+Адреса доставки: <%= @order.shipping_address %>
 <% @order.cart_items.each do |item| %>
-  * <%= item.game.title %> - <%= item.quantity %> x <%= number_to_currency(item.price, unit: "₴") %> - Key: <%= item.generated_keys.join(', ') %>
+  * <%= item.product.title %> - <%= item.quantity %> x <%= number_to_currency(item.price, unit: "₴") %>
 <% end %>
 
-Total: <%= number_to_currency(@order.total_price, unit: "₴") %>
+Всього: <%= number_to_currency(@order.total_price, unit: "₴") %>
