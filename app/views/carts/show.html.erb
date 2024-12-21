@@ -17,7 +17,7 @@
             <tr>
               <td class="py-2 px-4 border-b text-sm"><%= item.product.title %></td>
               <td class="py-2 px-4 border-b text-sm"><%= number_to_currency(item.price || item.product.price, unit: "₴") %></td>
-              <td class="py-2 px-4 border-b text-sm text-center">
+              <td class="py-2 px-4 border-b text-sm">
                 <%= form_with(model: item, local: true, method: :patch, class: "inline") do |f| %>
                   <%= f.number_field :quantity, value: item.quantity, min: 1, class: "w-16 p-2 border border-gray-300 rounded-lg", data: { cart_target: "quantityInput" } %>
                 <% end %>
