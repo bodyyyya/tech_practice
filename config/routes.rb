@@ -19,6 +19,9 @@ Rails.application.routes.draw do
       get :thank_you
     end
   end
+  resources :categories do
+    get :properties_form, on: :member
+  end
 
   get 'about', to: 'pages#about', as: 'about'
   

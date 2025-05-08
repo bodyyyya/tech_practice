@@ -2,19 +2,33 @@ class ProductsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
   before_action :set_product, only: [:show, :edit, :update, :destroy]
   before_action :authorize_admin!, only: [:new, :create, :edit, :update, :destroy]
-
   def index
+    @categories = Category.all
+
     @products = if params[:query].present?
-               Product.search(query: {
-                 multi_match: {
-                   query: params[:query],
-                   fields: [:title, :description],
-                   type: 'phrase_prefix'
-                 }
-               }).records.to_a
-             else
-               Product.all
-             end
+                  Product.search(query: {
+                    multi_match: {
+                      query: params[:query],
+                      fields: [:title, :description],
+                      type: 'phrase_prefix'
+                    }
+                  }).records.to_a
+                else
+                  Product.all
+                end
+
+    if params[:category_id].present?
+      @category = Category.find(params[:category_id])
+      @products = Product.where(category_id: @category.id)
+      @properties = @category.properties.includes(:property_values)
+    end
+
+    if params[:filters].present?
+      params[:filters].each do |property_id, values|
+        @products = @products.joins(:property_values)
+                             .where(property_values: { property_id: property_id, value: values })
+      end
+    end      
 
     if params[:min_price].present? && params[:max_price].present?
       min_price = params[:min_price].to_i
@@ -34,24 +48,32 @@ class ProductsController < ApplicationController
 
   def new
     @product = Product.new
+    @categories = Category.all
+    @properties = []
   end
 
   def create
     @product = Product.new(product_params)
     if @product.save
-      redirect_to @product, notice: 'Product was successfully created.'
+      redirect_to @product, notice: 'Продукт створено.'
     else
+      @categories = Category.all
+      @properties = @product.category&.properties || []
       render :new
     end
   end
 
   def edit
+    @categories = Category.all
+    @properties = @product.category&.properties || []
   end
 
   def update
     if @product.update(product_params)
-      redirect_to @product, notice: 'Product was successfully updated.'
+      redirect_to @product, notice: 'Продукт оновлено.'
     else
+      @categories = Category.all
+      @properties = @product.category&.properties || []
       render :edit
     end
   end
@@ -70,7 +92,8 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:title, :description, :price, :image)
+    params.require(:product).permit(:title, :description, :price, :image, :category_id,
+      property_values_attributes: [:id, :property_id, :value, :_destroy])
   end
 
   def authorize_admin!

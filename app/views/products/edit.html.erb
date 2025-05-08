@@ -5,7 +5,13 @@
       <%= f.label :title, "Заголовок", class: "block text-gray-700 font-bold mb-2" %>
       <%= f.text_field :title, class: "w-full p-2 border border-gray-300 rounded-lg" %>
     </div>
-
+    <div class="mb-4">
+      <%= f.label :category_id, "Категорія", class: "block text-gray-700 font-bold mb-2" %>
+      <%= f.collection_select :category_id, Category.all, :id, :name, { prompt: "Оберіть категорію" }, class: "w-full p-2 border border-gray-300 rounded-lg" %>
+    </div>
+    <div data-category-select-target="properties">
+      <%= render partial: "products/property_fields", locals: { product: @product } %>
+    </div>
     <div class="mb-4">
       <%= f.label :description, "Опис", class: "block text-gray-700 font-bold mb-2" %>
       <%= f.text_area :description, class: "w-full p-2 border border-gray-300 rounded-lg" %>

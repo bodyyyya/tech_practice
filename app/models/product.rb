@@ -2,8 +2,11 @@ class Product < ApplicationRecord
   include Elasticsearch::Model
   include Elasticsearch::Model::Callbacks
   has_one_attached :image
-
+  belongs_to :category, optional: true
+  has_many :property_values
+  has_many :properties, through: :property_values
   has_many :cart_items, dependent: :destroy
+  accepts_nested_attributes_for :property_values, allow_destroy: true
 
   settings index: {
     analysis: {
