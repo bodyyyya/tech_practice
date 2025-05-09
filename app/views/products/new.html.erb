@@ -1,31 +1,64 @@
-<div class="container mx-auto my-8">
-  <h2 class="text-2xl font-bold ml-2 mb-4">Додати новий продукт</h2>
-  <%= form_with(model: @product, local: true, class: "bg-white p-6 rounded-lg shadow-md", multipart: true) do |f| %>
-    <div class="mb-4">
-      <%= f.label :title, "Заголовок", class: "block text-gray-700 font-bold mb-2" %>
-      <%= f.text_field :title, class: "w-full p-2 border border-gray-300 rounded-lg" %>
-    </div>
-    <div class="mb-4">
-      <%= f.label :category_id, "Категорія", class: "block text-gray-700 font-bold mb-2" %>
-      <%= f.collection_select :category_id, Category.all, :id, :name, { prompt: "Оберіть категорію" }, class: "w-full p-2 border border-gray-300 rounded-lg" %>
-    </div>
-    <div data-category-select-target="properties">
-      <%= render partial: "products/property_fields", locals: { product: @product } %>
-    </div>
-    <div class="mb-4">
-      <%= f.label :description, "Опис", class: "block text-gray-700 font-bold mb-2" %>
-      <%= f.text_area :description, class: "w-full p-2 border border-gray-300 rounded-lg" %>
-    </div>
-    <div class="mb-4">
-      <%= f.label :price, "Ціна", class: "block text-gray-700 font-bold mb-2" %>
-      <%= f.number_field :price, step: 0.01, class: "w-full p-2 border border-gray-300 rounded-lg" %>
-    </div>
-    <div class="mb-4">
-      <%= f.label :image, "Фото", class: "block text-gray-700 font-bold mb-2" %>
-      <%= f.file_field :image, class: "w-full p-2 border border-gray-300 rounded-lg" %>
-    </div>
-    <div class="flex justify-end">
-      <%= f.submit 'Створити продукт', class: "bg-green-500 text-white font-bold py-2 px-4 rounded" %>
-    </div>
-  <% end %>
+<div data-controller="category-select"
+     data-category-select-product-id="<%= @product.id if @product.persisted? %>">
+  <div class="container mx-auto my-8">
+    <h2 class="text-2xl font-bold ml-2 mb-4">Додати новий продукт</h2>
+
+    <%= form_with(model: @product,
+                  local: true,
+                  multipart: true,
+                  class: "bg-white p-6 rounded-lg shadow-md") do |f| %>
+
+      <!-- Назва -->
+      <div class="mb-4">
+        <%= f.label :title, "Заголовок", class: "block text-gray-700 font-bold mb-2" %>
+        <%= f.text_field :title, class: "w-full p-2 border border-gray-300 rounded-lg" %>
+      </div>
+
+      <!-- Категорія -->
+      <div class="mb-4">
+        <%= f.label :category_id, "Категорія", class: "block text-gray-700 font-bold mb-2" %>
+        <%= f.collection_select :category_id,
+              Category.all, :id, :name,
+              { prompt: "— Оберіть категорію —" },
+              {
+                class: "w-full p-2 border border-gray-300 rounded-lg",
+                data: {
+                  target: "category-select.select",
+                  action: "change->category-select#load"
+                }
+              } %>
+      </div>
+
+      <!-- Динамічні поля властивостей -->
+      <div data-category-select-target="properties">
+        <%= render partial: "products/property_fields",
+                   locals: { product: @product, properties: @properties } %>
+      </div>
+
+      <!-- Опис -->
+      <div class="mb-4">
+        <%= f.label :description, "Опис", class: "block text-gray-700 font-bold mb-2" %>
+        <%= f.text_area :description, class: "w-full p-2 border border-gray-300 rounded-lg" %>
+      </div>
+
+      <!-- Ціна -->
+      <div class="mb-4">
+        <%= f.label :price, "Ціна", class: "block text-gray-700 font-bold mb-2" %>
+        <%= f.number_field :price, step: 0.01, class: "w-full p-2 border border-gray-300 rounded-lg" %>
+      </div>
+
+      <!-- Зображення -->
+      <div class="mb-4">
+        <%= f.label :image, "Фото", class: "block text-gray-700 font-bold mb-2" %>
+        <%= f.file_field :image, class: "w-full p-2 border border-gray-300 rounded-lg" %>
+      </div>
+
+      <!-- Кнопка -->
+      <div class="flex justify-end">
+        <%= f.submit 'Створити продукт',
+                     class: "bg-green-500 text-white font-bold py-2 px-4 rounded" %>
+      </div>
+
+    <% end %>
+  </div>
 </div>

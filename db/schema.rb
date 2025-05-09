@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_09_142831) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_09_202932) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -121,7 +121,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_09_142831) do
   end
 
   create_table "property_values", force: :cascade do |t|
-    t.integer "product_id", null: false
+    t.integer "product_id"
     t.integer "property_id", null: false
     t.string "value"
     t.datetime "created_at", null: false

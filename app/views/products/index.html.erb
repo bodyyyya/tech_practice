@@ -33,8 +33,10 @@
             <label for="category_id" class="block text-gray-700 font-bold mb-2">Категорія</label>
             <select name="category_id" id="category_id" class="w-full p-2 border border-gray-300 rounded-lg">
               <option value="">Усі категорії</option>
-              <% Category.all.each do |category| %>
-                <option value="<%= category.id %>" <%= 'selected' if params[:category_id].to_s == category.id.to_s %>><%= category.name %></option>
+              <% @categories.each do |category| %>
+                <option value="<%= category.id %>" <%= 'selected' if params[:category_id].to_s == category.id.to_s %>>
+                  <%= category.name %>
+                </option>
               <% end %>
             </select>
           </div>
@@ -44,7 +46,7 @@
               <div class="mt-4">
                 <h3 class="text-lg font-semibold"><%= property.name %></h3>
 
-                <% if property.options.present? %>
+                <% if property.options.is_a?(Array) && property.options.any? %>
                   <% property.options.each do |val| %>
                     <div>
                       <%= check_box_tag "filters[#{property.id}][]", val, params.dig(:filters, property.id.to_s)&.include?(val) %>
