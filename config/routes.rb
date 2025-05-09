@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  devise_for :admin_users, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
+
+  # Звичайні користувачі
+  devise_for :users
+
+  # Стандартна Devise-авторизація для користувачів
   get 'orders/new'
   get 'carts/show'
   get 'products/index'
@@ -9,7 +16,6 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
   get 'cart_items_count', to: 'cart_items#count'
-  devise_for :users
 
   resources :products
   resource :cart, only: [:show]
