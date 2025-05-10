@@ -1,9 +1,20 @@
-<% @properties.each do |property| %>
+<% properties.each do |property| %>
+  <% existing_pv = product.property_values.find { |pv| pv.property_id == property.id } %>
+
   <div class="mb-4">
-    <%= label_tag "product[property_values_attributes][][value]", property.name, class: "block text-gray-700 font-bold mb-2" %>
     <%= hidden_field_tag "product[property_values_attributes][][property_id]", property.id %>
-    <%= text_field_tag "product[property_values_attributes][][value]",
-        @product.property_values.find { |pv| pv.property_id == property.id }&.value,
-        class: "w-full p-2 border border-gray-300 rounded-lg" %>
+
+    <% if existing_pv %>
+      <%= hidden_field_tag "product[property_values_attributes][][id]", existing_pv.id %>
+    <% end %>
+
+    <%= label_tag "product[property_values_attributes][][value]", property.name,
+                  class: "block text-gray-700 font-bold mb-2" %>
+
+    <%= select_tag "product[property_values_attributes][][value]",
+          options_for_select(property.property_values.distinct.pluck(:value),
+                             existing_pv&.value),
+          prompt: "— Оберіть значення —",
+          class: "w-full p-2 border border-gray-300 rounded-lg" %>
   </div>
 <% end %>

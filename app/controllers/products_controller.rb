@@ -4,44 +4,53 @@ class ProductsController < ApplicationController
   before_action :authorize_admin!, only: [:new, :create, :edit, :update, :destroy]
   def index
     @categories = Category.all
+    @products = Product.all
 
-    @products = if params[:query].present?
-                  Product.search(query: {
-                    multi_match: {
-                      query: params[:query],
-                      fields: [:title, :description],
-                      type: 'phrase_prefix'
-                    }
-                  }).records.to_a
-                else
-                  Product.all
-                end
-
+    if params[:query].present?
+      search_ids = Product.search(
+        query: {
+          multi_match: {
+            query:  params[:query],
+            fields: [:title, :description],
+            type:   'phrase_prefix'
+          }
+        }
+      ).records.pluck(:id)
+  
+      @products = @products.where(id: search_ids)
+    end
+  
     if params[:category_id].present?
-      @category = Category.find(params[:category_id])
-      @products = Product.where(category_id: @category.id)
+      @category   = Category.find(params[:category_id])
+      @products   = @products.where(category_id: @category.id)
       @properties = @category.properties.includes(:property_values)
     end
 
     if params[:filters].present?
-      params[:filters].each do |property_id, values|
-        @products = @products.joins(:property_values)
-                             .where(property_values: { property_id: property_id, value: values })
-      end
-    end      
+      filter_property_ids = params[:filters].keys.map(&:to_i)
+      filter_values       = params[:filters].values.flatten
+  
+      @products = @products
+        .joins(:property_values)
+        .where(property_values: {
+          property_id: filter_property_ids,
+          value:       filter_values
+        })
+        .group('products.id')
+        .having('COUNT(DISTINCT property_values.property_id) = ?', filter_property_ids.size)
+    end
 
     if params[:min_price].present? && params[:max_price].present?
-      min_price = params[:min_price].to_i
-      max_price = params[:max_price].to_i
-      @products = @products.where(price: min_price..max_price)
+      min = params[:min_price].to_i
+      max = params[:max_price].to_i
+      @products = @products.where(price: min..max)
     elsif params[:min_price].present?
-      min_price = params[:min_price].to_i
-      @products = @products.where('price >= ?', min_price)
+      @products = @products.where('price >= ?', params[:min_price].to_i)
     elsif params[:max_price].present?
-      max_price = params[:max_price].to_i
-      @products = @products.where('price <= ?', max_price)
+      @products = @products.where('price <= ?', params[:max_price].to_i)
     end
   end
+  
 
   def show
   end
